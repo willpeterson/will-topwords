@@ -5,7 +5,7 @@ import will.peterson.topwords.counter.WordCountExecutor;
 import will.peterson.topwords.counter.WordCounter;
 
 /**
- * Main class of the top words program
+ * Main class of the top words program, does not use spring framework
  */
 public class MainNoSpring {
 

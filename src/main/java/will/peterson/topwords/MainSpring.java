@@ -5,6 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import will.peterson.topwords.counter.WordCountExecutor;
 
+/**
+ * Main class of the top words program, uses spring framework
+ */
 @SpringBootApplication
 @ComponentScan("will.peterson.topwords")
 public class MainSpring {
@@ -14,8 +17,8 @@ public class MainSpring {
 
 		int N = validateArgs(args);
 		if (N < 0) {
-			context.close(); // Close the context if validation fails
-			System.exit(1); // Exit the application
+			context.close();
+			System.exit(1);
 		}
 
 		// Retrieve the WordCountExecutor bean from the Spring context

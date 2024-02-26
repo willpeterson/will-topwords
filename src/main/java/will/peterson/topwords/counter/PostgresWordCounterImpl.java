@@ -18,7 +18,6 @@ public class PostgresWordCounterImpl implements WordCounter {
     @Autowired
     public WordCountRepository wordCountRepository;
 
-//    @Autowired
     public PostgresWordCounterImpl() {
     }
 

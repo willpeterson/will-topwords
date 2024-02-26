@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 /**
  * WordCountExecutor used for word counting
  */
-//@Component
 public class WordCountExecutor {
     private final WordCounter wordCounter;
     private final ExecutorService executor;

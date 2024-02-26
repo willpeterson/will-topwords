@@ -69,9 +69,9 @@ The program should be able to produce the result quickly, even when faced with m
 - Several easy ways to run:
     - Run the main class using maven and specify arguments
       - To run with spring:
-        > mvn exec:java -Dexec.mainClass="will.peterson.topwords.MainSpring" -Dexec.args="3 src/main/resources/test-files-2/sample.txt"
+        > mvn install exec:java -Dexec.mainClass="will.peterson.topwords.MainSpring" -Dexec.args="3 src/main/resources/test-files-2/sample.txt" -DskipTests
       - To run without spring:
-        > mvn exec:java -Dexec.mainClass="will.peterson.topwords.MainNoSpring" -Dexec.args="3 src/main/resources/test-files-2/sample.txt"
+        > mvn install exec:java -Dexec.mainClass="will.peterson.topwords.MainNoSpring" -Dexec.args="3 src/main/resources/test-files-2/sample.txt" -DskipTests
       - Or, run unit tests under test class 'MainNoSpring' class
         - Some tests don't have asserts, and point to local files to simulate running the program
         - Some tests include asserts to test the output
@@ -84,7 +84,7 @@ The program should be able to produce the result quickly, even when faced with m
         > mvn test -Dtest=will.peterson.topwords.counter.WordCountExecutorTest#fetchSortedWordsTest__kjv_grepCompare
 
   #### Sample output
-        > mvn exec:java -Dexec.mainClass="will.peterson.topwords.MainNoSpring" -Dexec.args="3 src/main/resources/test-files-2/kjv.txt"
+        > mvn install exec:java -Dexec.mainClass="will.peterson.topwords.MainNoSpring" -Dexec.args="3 src/main/resources/test-files-2/kjv.txt" -DskipTests
         >
         > ...counting words for file kjv.txt
         > 

@@ -93,7 +93,7 @@ class WordCountExecutorTest {
     }
 
     @Test
-    void fetchSortedWordsTest__r31_grepCompare() {
+    void fetchSortedWordsTest__r1_grepCompare() {
         doFetchSortedWordsTestWithGrep(100, "src/main/resources/test-files/random/r1.txt");
     }
 
