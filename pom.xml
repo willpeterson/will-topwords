@@ -6,7 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.1.10-SNAPSHOT</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 	<groupId>will.peterson</groupId>
 	<artifactId>topwords</artifactId>
@@ -31,36 +31,20 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.22</version> <!-- Use the latest version available -->
+			<version>1.18.22</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.3.1</version> <!-- Replace with the latest version -->
+			<version>42.3.1</version>
 		</dependency>
 
 	</dependencies>
 
 	<build>
 		<plugins>
-			<!-- Maven Exec Plugin -->
-<!--			<plugin>-->
-<!--				<groupId>org.codehaus.mojo</groupId>-->
-<!--				<artifactId>exec-maven-plugin</artifactId>-->
-<!--				<version>3.0.0</version>-->
-<!--				<executions>-->
-<!--					<execution>-->
-<!--						<goals>-->
-<!--							<goal>java</goal>-->
-<!--						</goals>-->
-<!--					</execution>-->
-<!--				</executions>-->
-<!--				<configuration>-->
-<!--					<mainClass>will.peterson.topwords.MainSpring</mainClass>-->
-<!--				</configuration>-->
-<!--			</plugin>-->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
