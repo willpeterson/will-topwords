@@ -84,7 +84,7 @@ class WordCountExecutorTest {
      * @param files
      * @param expected
      */
-    public void assertTopNEntriesMatchMap(int N, String files, List<Map.Entry<String, Integer>> expected) {
+    private static void assertTopNEntriesMatchMap(int N, String files, List<Map.Entry<String, Integer>> expected) {
         var wordCounter  = new HashMapWordCounterImpl();
         var executor = new WordCountExecutor(wordCounter);
         executor.processPaths(Path.of(files));
@@ -97,7 +97,7 @@ class WordCountExecutorTest {
      * @param N
      * @param filename
      */
-    private void assertGrepWordCountMatches(int N, String filename) {
+    private static void assertGrepWordCountMatches(int N, String filename) {
         var wordCounter  = new HashMapWordCounterImpl();
         var executor = new WordCountExecutor(wordCounter);
         executor.processPaths(Path.of(filename));
