@@ -2,10 +2,7 @@ package will.peterson.topwords.counter;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -23,11 +20,6 @@ public class WordCountExecutor {
         this.executor = Executors.newWorkStealingPool();
     }
 
-    public void processPaths(String paths) {
-        var pathArray = convertStringToPathArray(paths);
-        processPaths(pathArray);
-    }
-
     public void processPaths(Path... paths) {
         for (Path path : paths) {
             if (Files.isDirectory(path)) {
@@ -36,10 +28,11 @@ public class WordCountExecutor {
                 executor.submit(() -> wordCounter.countWords(path));
             }
         }
+        shutdown();
     }
 
-    private void processDirectory(Path directory) {
-        try (Stream<Path> walk = Files.walk(directory)) {
+    private void processDirectory(Path path) {
+        try (Stream<Path> walk = Files.walk(path)) {
             walk.filter(Files::isRegularFile)
                     .forEach(file -> executor.submit(() -> wordCounter.countWords(file)));
         } catch (Exception e) {
@@ -47,7 +40,7 @@ public class WordCountExecutor {
         }
     }
 
-    public void shutdown() {
+    private void shutdown() {
         executor.shutdown();
         try {
             var completed = executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
@@ -58,40 +51,18 @@ public class WordCountExecutor {
         }
     }
 
-    public static Path[] convertStringToPathArray(String pathVal) {
-        var strPaths = pathVal.split(" ");
-        var paths = new Path[strPaths.length];
-        for (int i = 0; i < strPaths.length; i++) {
-            paths[i] = Paths.get(strPaths[i]);
-        }
-        return paths;
+    public void printTopN(int n) {
+        var wordCount = wordCounter.getWordCount(n);
+        printTopN(wordCount);
     }
 
-    public void printTopN(int N) {
-        Map<String, Integer> wordCount = wordCounter.getWordCount();
-        var fetched = fetchSortedWords(wordCount);
-        printTopN(fetched, N);
-    }
-
-    public PriorityQueue<Map.Entry<String, Integer>> fetchSortedWords(Map<String, Integer> wordCount) {
-        PriorityQueue<Map.Entry<String, Integer>> pq = new PriorityQueue<>(
-                // sort biggest count first, then by key name alphabetically
-                Comparator.<Map.Entry<String, Integer>>comparingInt(Map.Entry::getValue).reversed()
-                        .thenComparing(Map.Entry.comparingByKey(String.CASE_INSENSITIVE_ORDER)));
-
-        pq.addAll(wordCount.entrySet());
-        return pq;
-    }
-
-    private void printTopN(PriorityQueue<Map.Entry<String, Integer>> pq, int N) {
-        if (pq.isEmpty()) {
+    private static void printTopN(List<Map.Entry<String, Integer>> wordCounts) {
+        if (wordCounts.isEmpty()) {
             System.out.println("Empty Top Word list returned");
         } else {
-            for (int i = 0; i < N; i++) {
-                Map.Entry<String, Integer> entry = pq.poll();
+            for (var word : wordCounts) {
                 // ensure format is <word 1> occurred <x> times
-                if (entry != null)
-                    System.out.println(entry.getKey() + " occurred " + entry.getValue() + " times");
+                System.out.println(word.getKey() + " occurred " + word.getValue() + " times");
             }
         }
     }

@@ -60,8 +60,8 @@ The program should be able to produce the result quickly, even when faced with m
 - Step 2: Install Apache Maven by downloading the binary archive from the Apache Maven website and extracting it to a desired location.
 - Step 3: Set up environment variables JAVA_HOME and MAVEN_HOME to point to the installation directories of JDK and Maven, respectively.
 - Step 4: PostgresSQL (optional)
-  - To use postgres, you need to enable and update DB configuration in the application.properties
-    - by default useDatabase flag is false (It will use the in memory solution otherwise)
+  - To use sql, you need to enable and update DB configuration in the application.properties
+    - by default the profile is set to 'hash', you can also use 'grep' and 'sql' settings.  Note that these others are for experimental use only. They will not perform as well and will more likely have bugs
   - Make sure postgres is running at the location specified in application.properties
 
 ### To run

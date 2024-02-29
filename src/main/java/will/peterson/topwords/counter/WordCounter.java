@@ -1,7 +1,9 @@
 package will.peterson.topwords.counter;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public interface WordCounter {
 
@@ -14,8 +16,9 @@ public interface WordCounter {
 
     /**
      * Gets the normalized word count with the key being the word and the value being the count
-     *
+     * @param n count to get
+     * @return map of counts
      */
-    Map<String, Integer> getWordCount();
+    List<Map.Entry<String, Integer>> getWordCount(int n);
 }
 

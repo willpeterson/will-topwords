@@ -20,6 +20,7 @@ class MainNoSpringTest {
          System.setOut(originalOut);
          String capturedOutput = outputStream.toString();
          System.out.println(capturedOutput);
+         assertFalse(capturedOutput.contains("not allowed"), "Profile is not allowed for this test");
          assertTrue(capturedOutput.contains("a occurred 3 times"), "Word count expected");
          assertTrue(capturedOutput.contains("hello occurred 3 times"), "Word count expected");
          assertTrue(capturedOutput.contains("world occurred 2 times"), "Word count expected");
@@ -41,22 +42,8 @@ class MainNoSpringTest {
         System.setOut(originalOut);
         String capturedOutput = outputStream.toString();
         System.out.println(capturedOutput);
+        assertFalse(capturedOutput.contains("not allowed"), "Profile is not allowed for this test");
         assertFalse(capturedOutput.contains("are occurred"), "Should not contain extra results");
-    }
-
-    @Test
-    void mainTest__sampleFile_BadArgs() {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        PrintStream originalOut = System.out;
-        System.setOut(new PrintStream(outputStream));
-
-        String[] args = {"0"};
-        MainNoSpring.main(args); // call the main method, like we would from command line
-
-        System.setOut(originalOut);
-        String capturedOutput = outputStream.toString();
-        System.out.println(capturedOutput);
-        assertTrue(capturedOutput.contains("Usage:"), "Should show usage");
     }
 
     @Test

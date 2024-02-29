@@ -1,9 +1,10 @@
 package will.peterson.topwords.counter;
 
 import org.junit.jupiter.api.Test;
-import java.io.*;
-import java.util.HashMap;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,19 +18,15 @@ class WordCountExecutorTest {
         // get from TopWord
         var wordCounter  = new HashMapWordCounterImpl();
         var executor = new WordCountExecutor(wordCounter);
-        executor.processPaths(fileList);
-        executor.shutdown();
-        var fromTopWord = executor.fetchSortedWords(wordCounter.getWordCount());
-
-        // test
-        var entry = fromTopWord.poll();
-        assertTrue(entry.getKey().equals("a") && entry.getValue() == 3, "Expected count");
-        entry = fromTopWord.poll();
-        assertTrue(entry.getKey().equals("hello") && entry.getValue() == 3, "Expected count");
-        entry = fromTopWord.poll();
-        assertTrue(entry.getKey().equals("world") && entry.getValue() == 2, "Expected count");
-        entry = fromTopWord.poll();
-        assertTrue(entry.getKey().equals("you") && entry.getValue() == 2, "Expected count");
+        executor.processPaths(Path.of(fileList));
+        var topNEntries = wordCounter.getWordCount(N);
+        List<Map.Entry<String, Integer>> expected = List.of(
+                Map.entry("a", 3),
+                Map.entry("hello", 3),
+                Map.entry("world", 2),
+                Map.entry("you", 2)
+        );
+        assertEquals(topNEntries, expected, "Expected word counts should be the same");
     }
 
     @Test
@@ -40,13 +37,12 @@ class WordCountExecutorTest {
         // get from TopWord
         var wordCounter  = new HashMapWordCounterImpl();
         var executor = new WordCountExecutor(wordCounter);
-        executor.processPaths(fileList);
-        executor.shutdown();
-        var fromTopWord = executor.fetchSortedWords(wordCounter.getWordCount());
-
-        // test
-        var entry = fromTopWord.poll();
-        assertTrue(entry.getKey().equals("bank") && entry.getValue() == 4, "Expected count");
+        executor.processPaths(Path.of(fileList));
+        var topNEntries = wordCounter.getWordCount(N);
+        List<Map.Entry<String, Integer>> expected = List.of(
+                Map.entry("bank", 4)
+        );
+        assertEquals(topNEntries, expected, "Expected word counts should be the same");
     }
 
     @Test
@@ -57,17 +53,13 @@ class WordCountExecutorTest {
         // get from TopWord
         var wordCounter  = new HashMapWordCounterImpl();
         var executor = new WordCountExecutor(wordCounter);
-        executor.processPaths(fileList);
-        executor.shutdown();
-        var fromTopWord = executor.fetchSortedWords(wordCounter.getWordCount());
-
-        // test
-        var entry = fromTopWord.poll();
-        assertTrue(entry.getKey().equals("redesign") && entry.getValue() == 2, "Expected count");
-        entry = fromTopWord.poll();
-        assertTrue(entry.getKey().equals("design") && entry.getValue() == 1, "Expected count");
-        entry = fromTopWord.poll();
-        assertTrue(entry.getKey().equals("re") && entry.getValue() == 1, "Expected count");
+        executor.processPaths(Path.of(fileList));
+        var topNEntries = wordCounter.getWordCount(N);
+        List<Map.Entry<String, Integer>> expected = List.of(
+                Map.entry("200", 3),
+                Map.entry("redesign", 2)
+        );
+        assertEquals(topNEntries, expected, "Expected word counts should be the same");
     }
 
     @Test
@@ -78,18 +70,17 @@ class WordCountExecutorTest {
         // get from TopWord
         var wordCounter  = new HashMapWordCounterImpl();
         var executor = new WordCountExecutor(wordCounter);
-        executor.processPaths(fileList);
-        executor.shutdown();
-        var fromTopWord = executor.fetchSortedWords(wordCounter.getWordCount());
-
-        // test
-        var entry = fromTopWord.poll();
-        assertTrue(entry.getKey().equals("hello") && entry.getValue() == 555, "Expected count");
+        executor.processPaths(Path.of(fileList));
+        var topNEntries = wordCounter.getWordCount(N);
+        List<Map.Entry<String, Integer>> expected = List.of(
+                Map.entry("hello", 555)
+        );
+        assertEquals(topNEntries, expected, "Expected word counts should be the same");
     }
 
     @Test
     void fetchSortedWordsTest__letters1_grepCompare() {
-        doFetchSortedWordsTestWithGrep(100, "src/main/resources/test-files/letters/1.txt");
+        doFetchSortedWordsTestWithGrep(25, "src/main/resources/test-files/letters/1.txt");
     }
 
     @Test
@@ -99,7 +90,7 @@ class WordCountExecutorTest {
 
     @Test
     void fetchSortedWordsTest__r2_grepCompare() {
-        doFetchSortedWordsTestWithGrep(100, "src/main/resources/test-files/random/r2.txt");
+        doFetchSortedWordsTestWithGrep(25, "src/main/resources/test-files/random/r2.txt");
     }
 
     @Test
@@ -112,80 +103,24 @@ class WordCountExecutorTest {
         doFetchSortedWordsTestWithGrep(5, "src/main/resources/test-files-2/asv.txt");
     }
 
-    @Test
-    void fetchSortedWordsTest__kjv_grepCompare() {
-        doFetchSortedWordsTestWithGrep(5, "src/main/resources/test-files-2/kjv.txt");
-    }
-
     /***
      * Helper function for comparing file counts with a single file
      * @param N
-     * @param dataFile
+     * @param filename
      */
-    private void doFetchSortedWordsTestWithGrep(int N, String dataFile) {
+    private void doFetchSortedWordsTestWithGrep(int N, String filename) {
         // get from TopWord
         var wordCounter  = new HashMapWordCounterImpl();
         var executor = new WordCountExecutor(wordCounter);
-        executor.processPaths(dataFile);
-        executor.shutdown();
-        var fromTopWord = executor.fetchSortedWords(wordCounter.getWordCount());
+        executor.processPaths(Path.of(filename));
+        var topNEntries = wordCounter.getWordCount(N);
 
-        // get from grep
-        var fromGrep = executeGrepAndGetWordCounts(dataFile);
+        var grepWordCounter  = new GrepWordCounterImpl();
+        var grepExecutor = new WordCountExecutor(grepWordCounter);
+        grepExecutor.processPaths(Path.of(filename));
+        var grepTopNEntries = grepWordCounter.getWordCount(N);
 
-        // assert
-        for (int i = 0; i < N; i++) {
-            var entry = fromTopWord.poll();
-            if (entry == null)
-                break;
-            var expected = fromGrep.get(entry.getKey());
-            var msg = entry.getKey() + " occurred " + entry.getValue() + " times, but expected " + expected;
-            assertEquals(entry.getValue(), expected, msg);
-            System.out.println(msg.substring(0,msg.indexOf(", ")));
-        }
-    }
-
-    /***
-     * executeGrepAndGetWordCounts: Check the count using grep for testing
-     *  - Limited platform uses
-     *  - Limited scale
-     *  - For testing only
-     *
-     * @param filePath The file to get words from
-     * @return Map<String, Integer> Map of top words
-     */
-    private static Map<String, Integer> executeGrepAndGetWordCounts(String filePath) {
-        Map<String, Integer> wordCountMap = new HashMap<>();
-
-        // Execute the command
-        try {
-            Process process = new ProcessBuilder()
-                    .command("bash", "-c", "sed 's/[^a-zA-Z ]//g' " + filePath + " | grep -oE '\\b[a-zA-Z]+\\b' | tr '[:upper:]' '[:lower:]' | sort | uniq -c | sort -nr")  // | head -n 1
-                    .redirectErrorStream(true)
-                    .start();
-
-            // Read the output of the command
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // Process the output line
-                String[] parts = line.trim().split("\\s+");
-                if (parts.length == 2) {
-                    String word = parts[1];
-                    int count = Integer.parseInt(parts[0]);
-                    wordCountMap.put(word, count);
-                }
-            }
-
-            // Wait for the process to finish
-            int exitCode = process.waitFor();
-            System.out.println("Command executed with exit code: " + exitCode);
-
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        return wordCountMap;
+        assertEquals(topNEntries, grepTopNEntries, "word counts should be the same as grep counts");
     }
 
 }

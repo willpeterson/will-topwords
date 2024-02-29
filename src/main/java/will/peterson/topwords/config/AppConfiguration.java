@@ -1,27 +1,39 @@
 package will.peterson.topwords.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import will.peterson.topwords.counter.HashMapWordCounterImpl;
-import will.peterson.topwords.counter.PostgresWordCounterImpl;
-import will.peterson.topwords.counter.WordCountExecutor;
-import will.peterson.topwords.counter.WordCounter;
-import will.peterson.topwords.repo.WordCountRepository;
+import will.peterson.topwords.counter.*;
+
+import javax.naming.ConfigurationException;
 
 @Configuration
 public class AppConfiguration {
 
-    @Value("${useDatabase}")
-    private boolean useDatabase;
+    @Value("${spring.profiles.active}")
+    private String springProfilesActive;
+
+    @Value("${spring.datasource.url:}")
+    private String springDatasourceUrl;
+
+    @Value("${spring.datasource.username:}")
+    private String springDatasourceUsername;
+
+    @Value("${spring.datasource.password:}")
+    private String springDatasourcePassword;
 
     @Bean
-    public WordCounter wordCounter() {
+    public WordCounter wordCounter() throws ConfigurationException {
 
-        if (useDatabase) {
-            return new PostgresWordCounterImpl();
-        } else {
+        if (springProfilesActive.toLowerCase().contains("hash")) {
             return new HashMapWordCounterImpl();
+        } else if (springProfilesActive.toLowerCase().contains("sql")) {
+            return new SqlWordCounterImpl(springDatasourceUrl, springDatasourceUsername, springDatasourcePassword);
+        } else if (springProfilesActive.toLowerCase().contains("grep")) {
+            return new GrepWordCounterImpl();
+        } else {
+            throw new ConfigurationException("Unknown counter profile " + springProfilesActive);
         }
     }
 
