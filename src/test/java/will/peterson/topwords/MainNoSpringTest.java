@@ -3,6 +3,7 @@ package will.peterson.topwords;
 import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -10,41 +11,48 @@ class MainNoSpringTest {
 
      @Test
      void mainTest__sampleFile() {
-         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-         PrintStream originalOut = System.out;
-         System.setOut(new PrintStream(outputStream));
-
-         String[] args = {"4", "src/main/resources/test-files-2/sample.txt"};
-         MainNoSpring.main(args); // call the main method, like we would from command line
-
-         System.setOut(originalOut);
-         String capturedOutput = outputStream.toString();
-         System.out.println(capturedOutput);
-         assertFalse(capturedOutput.contains("not allowed"), "Profile is not allowed for this test");
-         assertTrue(capturedOutput.contains("a occurred 3 times"), "Word count expected");
-         assertTrue(capturedOutput.contains("hello occurred 3 times"), "Word count expected");
-         assertTrue(capturedOutput.contains("world occurred 2 times"), "Word count expected");
-         assertTrue(capturedOutput.contains("you occurred 2 times"), "Word count expected");
-         assertTrue(capturedOutput.indexOf("a occurred") < capturedOutput.indexOf("hello occurred"), "Sorting expected");
-         assertTrue(capturedOutput.indexOf("world occurred") < capturedOutput.indexOf("you occurred"), "Sorting expected");
-         assertFalse(capturedOutput.contains("are occurred"), "Should not contain extra results");
+         var expected = List.of("a occurred 3 times", "hello occurred 3 times", "world occurred 2 times", "you occurred 2 times");
+         var notExpected = List.of("not allowed", "are allowed");
+         assertCapturedOutputContains(4, "src/main/resources/test-files-2/sample.txt", expected, notExpected);
      }
 
     @Test
     void mainTest__sampleFile_ZeroResults() {
+        var notExpected = List.of("not allowed", "are allowed");
+        assertCapturedOutputContains(4, "src/main/resources/test-files-2/sample.txt", null, notExpected);
+    }
+
+    public void assertCapturedOutputContains(int N, String files, List<String> expected, List<String> notExpected) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream originalOut = System.out;
         System.setOut(new PrintStream(outputStream));
 
-        String[] args = {"0", "src/main/resources/test-files-2/sample.txt"};
+        String[] args = {String.valueOf(N), files};
         MainNoSpring.main(args); // call the main method, like we would from command line
 
         System.setOut(originalOut);
         String capturedOutput = outputStream.toString();
         System.out.println(capturedOutput);
         assertFalse(capturedOutput.contains("not allowed"), "Profile is not allowed for this test");
-        assertFalse(capturedOutput.contains("are occurred"), "Should not contain extra results");
+        if (expected != null) {
+            for (var val : expected) {
+                assertTrue(capturedOutput.contains(val), "Should contain result '" + val + "'");
+            }
+            if (expected.size() > 2) {
+                for (int i = 0; i < expected.size() - 1; i++) {
+                    assertTrue(capturedOutput.indexOf(expected.get(i)) < capturedOutput.indexOf(expected.get(i + 1)),
+                            "Correct sorting expected");
+                }
+            }
+        }
+        if (notExpected != null) {
+            for (var val : notExpected) {
+                assertFalse(capturedOutput.contains(val), "Should not contain result" + val);
+            }
+        }
     }
+
+    // 'tests' below used to run code with different parameters
 
     @Test
     void mainTest__folder() {

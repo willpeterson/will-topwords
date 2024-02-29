@@ -13,69 +13,45 @@ class WordCountExecutorTest {
     @Test
     void fetchSortedWordsTest__sampleFile() {
         var N = 4;
-        var fileList = "src/main/resources/test-files-2/sample.txt";
-
-        // get from TopWord
-        var wordCounter  = new HashMapWordCounterImpl();
-        var executor = new WordCountExecutor(wordCounter);
-        executor.processPaths(Path.of(fileList));
-        var topNEntries = wordCounter.getWordCount(N);
+        var files = "src/main/resources/test-files-2/sample.txt";
         List<Map.Entry<String, Integer>> expected = List.of(
                 Map.entry("a", 3),
                 Map.entry("hello", 3),
                 Map.entry("world", 2),
                 Map.entry("you", 2)
         );
-        assertEquals(topNEntries, expected, "Expected word counts should be the same");
+        assertTopNEntriesMatchMap(N, files, expected);
     }
 
     @Test
     void fetchSortedWordsTest__sameWords() {
         var N = 2;
-        var fileList = "src/main/resources/test-files-2/same-words.txt";
-
-        // get from TopWord
-        var wordCounter  = new HashMapWordCounterImpl();
-        var executor = new WordCountExecutor(wordCounter);
-        executor.processPaths(Path.of(fileList));
-        var topNEntries = wordCounter.getWordCount(N);
+        var files = "src/main/resources/test-files-2/same-words.txt";
         List<Map.Entry<String, Integer>> expected = List.of(
                 Map.entry("bank", 4)
         );
-        assertEquals(topNEntries, expected, "Expected word counts should be the same");
+        assertTopNEntriesMatchMap(N, files, expected);
     }
 
     @Test
     void fetchSortedWordsTest__differentWords() {
         var N = 2;
-        var fileList = "src/main/resources/test-files-2/different-words.txt";
-
-        // get from TopWord
-        var wordCounter  = new HashMapWordCounterImpl();
-        var executor = new WordCountExecutor(wordCounter);
-        executor.processPaths(Path.of(fileList));
-        var topNEntries = wordCounter.getWordCount(N);
+        var files = "src/main/resources/test-files-2/different-words.txt";
         List<Map.Entry<String, Integer>> expected = List.of(
                 Map.entry("200", 3),
                 Map.entry("redesign", 2)
         );
-        assertEquals(topNEntries, expected, "Expected word counts should be the same");
+        assertTopNEntriesMatchMap(N, files, expected);
     }
 
     @Test
     void fetchSortedWordsTest__knownCount_recursive_concurrent() {
         var N = 1;
-        var fileList = "src/main/resources/test-files-2/known-count-555";
-
-        // get from TopWord
-        var wordCounter  = new HashMapWordCounterImpl();
-        var executor = new WordCountExecutor(wordCounter);
-        executor.processPaths(Path.of(fileList));
-        var topNEntries = wordCounter.getWordCount(N);
-        List<Map.Entry<String, Integer>> expected = List.of(
+        var files = "src/main/resources/test-files-2/known-count-555";
+        var expected = List.of(
                 Map.entry("hello", 555)
         );
-        assertEquals(topNEntries, expected, "Expected word counts should be the same");
+        assertTopNEntriesMatchMap(N, files, expected);
     }
 
     @Test
@@ -103,13 +79,26 @@ class WordCountExecutorTest {
         doFetchSortedWordsTestWithGrep(5, "src/main/resources/test-files-2/asv.txt");
     }
 
+    /**
+     * Helper function for comparing file counts with a single file
+     * @param N
+     * @param files
+     * @param expected
+     */
+    public void assertTopNEntriesMatchMap(int N, String files, List<Map.Entry<String, Integer>> expected) {
+        var wordCounter  = new HashMapWordCounterImpl();
+        var executor = new WordCountExecutor(wordCounter);
+        executor.processPaths(Path.of(files));
+        var topNEntries = wordCounter.getWordCount(N);
+        assertEquals(topNEntries, expected, "Expected word counts should be the same");
+    }
+
     /***
      * Helper function for comparing file counts with a single file
      * @param N
      * @param filename
      */
     private void doFetchSortedWordsTestWithGrep(int N, String filename) {
-        // get from TopWord
         var wordCounter  = new HashMapWordCounterImpl();
         var executor = new WordCountExecutor(wordCounter);
         executor.processPaths(Path.of(filename));
