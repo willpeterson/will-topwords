@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,7 +19,7 @@ class WordCountExecutorTest {
                 Map.entry("world", 2),
                 Map.entry("you", 2)
         );
-        assertTopNEntriesMatchMap(N, files, expected);
+        assertTopNEntriesMatchMap(expected.size(), files, expected);
     }
 
     @Test
@@ -30,7 +29,7 @@ class WordCountExecutorTest {
         List<Map.Entry<String, Integer>> expected = List.of(
                 Map.entry("bank", 4)
         );
-        assertTopNEntriesMatchMap(N, files, expected);
+        assertTopNEntriesMatchMap(expected.size(), files, expected);
     }
 
     @Test
@@ -41,7 +40,7 @@ class WordCountExecutorTest {
                 Map.entry("200", 3),
                 Map.entry("redesign", 2)
         );
-        assertTopNEntriesMatchMap(N, files, expected);
+        assertTopNEntriesMatchMap(expected.size(), files, expected);
     }
 
     @Test
@@ -51,32 +50,32 @@ class WordCountExecutorTest {
         var expected = List.of(
                 Map.entry("hello", 555)
         );
-        assertTopNEntriesMatchMap(N, files, expected);
+        assertTopNEntriesMatchMap(expected.size(), files, expected);
     }
 
     @Test
     void fetchSortedWordsTest__letters1_grepCompare() {
-        doFetchSortedWordsTestWithGrep(25, "src/main/resources/test-files/letters/1.txt");
+        assertGrepWordCountMatches(25, "src/main/resources/test-files/letters/1.txt");
     }
 
     @Test
     void fetchSortedWordsTest__r1_grepCompare() {
-        doFetchSortedWordsTestWithGrep(100, "src/main/resources/test-files/random/r1.txt");
+        assertGrepWordCountMatches(100, "src/main/resources/test-files/random/r1.txt");
     }
 
     @Test
     void fetchSortedWordsTest__r2_grepCompare() {
-        doFetchSortedWordsTestWithGrep(25, "src/main/resources/test-files/random/r2.txt");
+        assertGrepWordCountMatches(25, "src/main/resources/test-files/random/r2.txt");
     }
 
     @Test
     void fetchSortedWordsTest__r3_grepCompare() {
-        doFetchSortedWordsTestWithGrep(100, "src/main/resources/test-files/random/r3.txt");
+        assertGrepWordCountMatches(100, "src/main/resources/test-files/random/r3.txt");
     }
 
     @Test
     void fetchSortedWordsTest__asv_grepCompare() {
-        doFetchSortedWordsTestWithGrep(5, "src/main/resources/test-files-2/asv.txt");
+        assertGrepWordCountMatches(5, "src/main/resources/test-files-2/asv.txt");
     }
 
     /**
@@ -98,7 +97,7 @@ class WordCountExecutorTest {
      * @param N
      * @param filename
      */
-    private void doFetchSortedWordsTestWithGrep(int N, String filename) {
+    private void assertGrepWordCountMatches(int N, String filename) {
         var wordCounter  = new HashMapWordCounterImpl();
         var executor = new WordCountExecutor(wordCounter);
         executor.processPaths(Path.of(filename));

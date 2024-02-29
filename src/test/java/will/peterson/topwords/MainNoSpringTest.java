@@ -13,13 +13,13 @@ class MainNoSpringTest {
      void mainTest__sampleFile() {
          var expected = List.of("a occurred 3 times", "hello occurred 3 times", "world occurred 2 times", "you occurred 2 times");
          var notExpected = List.of("not allowed", "are allowed");
-         assertCapturedOutputContains(4, "src/main/resources/test-files-2/sample.txt", expected, notExpected);
+         assertCapturedOutputContains(expected.size(), "src/main/resources/test-files-2/sample.txt", expected, notExpected);
      }
 
     @Test
     void mainTest__sampleFile_ZeroResults() {
-        var notExpected = List.of("not allowed", "are allowed");
-        assertCapturedOutputContains(4, "src/main/resources/test-files-2/sample.txt", null, notExpected);
+         var notExpected = List.of("occurred");
+        assertCapturedOutputContains(0, "src/main/resources/test-files-2/sample.txt", null, notExpected);
     }
 
     public void assertCapturedOutputContains(int N, String files, List<String> expected, List<String> notExpected) {
